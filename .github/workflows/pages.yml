@@ -1,0 +1,42 @@
+name: Publicar no GitHub Pages
+
+# O aplicativo é feito de arquivos estáticos: basta enviá-los para o Pages.
+# Este workflow é o que faz a publicação quando a fonte do Pages está em
+# "GitHub Actions" (Settings -> Pages -> Source).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# uma publicação por vez, sem cancelar a que já está em andamento
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - name: Buscar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empacotar o site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Publicar
+        id: publicacao
+        uses: actions/deploy-pages@v4
