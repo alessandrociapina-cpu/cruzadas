@@ -1,0 +1,640 @@
+/* Cruzadas — interface pensada primeiro para a tela do celular. */
+
+:root {
+  --fundo: #f5f6f8;
+  --papel: #ffffff;
+  --texto: #16181d;
+  --apagado: #616774;
+  --borda: #c9ced8;
+  --borda-forte: #2a2f3a;
+  --destaque: #1f6feb;
+  --destaque-suave: #d6e6ff;
+  --palavra: #eaf2ff;
+  --preta: #2a2f3a;
+  --dica-fundo: #f0f1f4;
+  --erro: #b3261e;
+  --raio: 12px;
+  --barra-altura: 52px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #14161a;
+    --papel: #1c1f26;
+    --texto: #e8eaee;
+    --apagado: #9aa1ae;
+    --borda: #3a404c;
+    --borda-forte: #7b8494;
+    --destaque: #4d90ff;
+    --destaque-suave: #1d345e;
+    --palavra: #22314d;
+    --preta: #0c0e12;
+    --dica-fundo: #262a33;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font:
+    16px/1.4 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- barra superior ---------- */
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: calc(var(--barra-altura) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) 10px 0;
+  background: var(--papel);
+  border-bottom: 1px solid var(--borda);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.barra h1 {
+  font-size: 18px;
+  margin: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-acoes {
+  display: flex;
+  gap: 4px;
+}
+
+.botao-icone {
+  background: none;
+  border: 0;
+  color: var(--texto);
+  font-size: 20px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.botao-icone:active {
+  background: var(--fundo);
+}
+
+main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tela {
+  flex: 1;
+  min-height: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+/* precisa vir depois de .tela: display:flex venceria o [hidden] do navegador */
+.tela[hidden],
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- botões e campos ---------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  min-height: 46px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--papel);
+  color: var(--texto);
+  font-size: 16px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.botao:active {
+  transform: scale(0.98);
+}
+
+.botao-primario {
+  background: var(--destaque);
+  border-color: var(--destaque);
+  color: #fff;
+  font-weight: 600;
+}
+
+.botao-perigo {
+  color: var(--erro);
+}
+
+.acoes-principais {
+  display: grid;
+  gap: 10px;
+}
+
+.linha-botoes {
+  display: flex;
+  gap: 10px;
+}
+
+.linha-botoes > * {
+  flex: 1;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.campo label {
+  font-size: 13px;
+  color: var(--apagado);
+}
+
+.campo input,
+.campo select {
+  padding: 10px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  background: var(--papel);
+  color: var(--texto);
+  width: 100%;
+}
+
+.campo input[type='range'] {
+  padding: 0;
+  accent-color: var(--destaque);
+}
+
+.campo-duplo {
+  display: flex;
+  gap: 10px;
+}
+
+.secao {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--apagado);
+  margin: 4px 0 0;
+}
+
+.dica-texto {
+  font-size: 13px;
+  color: var(--apagado);
+  margin: 0;
+}
+
+.erro {
+  background: #fde8e6;
+  color: var(--erro);
+  border-radius: var(--raio);
+  padding: 10px 12px;
+  margin: 0;
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .erro {
+    background: #3a1f1d;
+    color: #ff9d95;
+  }
+}
+
+.vazio {
+  color: var(--apagado);
+  text-align: center;
+  padding: 24px 12px;
+  font-size: 15px;
+}
+
+/* ---------- biblioteca ---------- */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--papel);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 10px 12px;
+}
+
+.item-abrir {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.miniatura {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  flex: none;
+}
+
+.item-nome {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-detalhe {
+  font-size: 13px;
+  color: var(--apagado);
+}
+
+.barra-progresso {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--borda);
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.barra-progresso > i {
+  display: block;
+  height: 100%;
+  background: var(--destaque);
+}
+
+.avancado {
+  background: var(--papel);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 10px 12px;
+}
+
+.avancado summary {
+  cursor: pointer;
+  color: var(--apagado);
+  font-size: 14px;
+}
+
+.avancado > * + * {
+  margin-top: 10px;
+}
+
+/* ---------- importação ---------- */
+.previa {
+  position: relative;
+  background: var(--papel);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.previa canvas {
+  max-width: 100%;
+  max-height: 46vh;
+  object-fit: contain;
+  display: block;
+}
+
+.carregando {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 15px;
+}
+
+.giro {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.painel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- grade ---------- */
+.area-grade {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--papel);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  touch-action: pan-x pan-y;
+}
+
+.grade {
+  display: grid;
+  gap: 0;
+  background: var(--borda-forte);
+  border: 2px solid var(--borda-forte);
+  width: max-content;
+  user-select: none;
+}
+
+.casa {
+  position: relative;
+  width: var(--casa, 38px);
+  height: var(--casa, 38px);
+  background: var(--papel);
+  border-right: 1px solid var(--borda-forte);
+  border-bottom: 1px solid var(--borda-forte);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--casa, 38px) * 0.55);
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0;
+  margin: 0;
+  color: var(--texto);
+  font-family: inherit;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.casa:nth-child(var(--cols)) {
+  border-right: 0;
+}
+
+.casa.preta {
+  background: var(--preta);
+}
+
+.casa.dica {
+  background-color: var(--dica-fundo);
+  background-repeat: no-repeat;
+  /* a área do recorte precisa incluir a borda: sem isso cada casa "come" 1px e
+     o erro se acumula, cortando os enunciados no fim da grade */
+  background-origin: border-box;
+  cursor: pointer;
+}
+
+.casa.dica.sem-imagem::after {
+  content: '?';
+  font-size: calc(var(--casa, 38px) * 0.4);
+  color: var(--apagado);
+}
+
+.casa .numero {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  font-size: calc(var(--casa, 38px) * 0.26);
+  font-weight: 600;
+  color: var(--apagado);
+  line-height: 1;
+}
+
+.casa.na-palavra {
+  background: var(--palavra);
+}
+
+.casa.ativa {
+  background: var(--destaque-suave);
+  box-shadow: inset 0 0 0 2px var(--destaque);
+}
+
+.casa.dica.alvo {
+  box-shadow: inset 0 0 0 2px var(--destaque);
+}
+
+/* ---------- ajuste ---------- */
+.seletor-pincel {
+  display: flex;
+  gap: 8px;
+}
+
+.pincel {
+  flex: 1;
+  padding: 10px 6px;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  background: var(--papel);
+  color: var(--texto);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pincel[aria-pressed='true'] {
+  border-color: var(--destaque);
+  background: var(--destaque-suave);
+  font-weight: 600;
+}
+
+/* ---------- jogo ---------- */
+/* a tela do jogo não rola: só a grade rola, por dentro, para o teclado nunca
+   cobrir a casa em que se está escrevendo */
+.tela-jogo {
+  padding-bottom: 0;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.rodape-jogo {
+  flex: none;
+  background: var(--papel);
+  border-top: 1px solid var(--borda);
+  margin: 0 -14px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dica-atual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 15px;
+}
+
+.dica-rotulo {
+  flex: none;
+  font-weight: 700;
+  color: var(--destaque);
+  font-size: 13px;
+}
+
+.dica-texto-atual {
+  flex: 1;
+  min-width: 0;
+}
+
+.dica-imagem {
+  max-height: 64px;
+  border-radius: 6px;
+  border: 1px solid var(--borda);
+  background: #fff;
+}
+
+.teclado {
+  display: grid;
+  gap: 5px;
+}
+
+.linha-teclas {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 5px;
+  justify-content: center;
+}
+
+.tecla {
+  min-width: 30px;
+  height: 44px;
+  padding: 0 2px;
+  border: 1px solid var(--borda);
+  border-radius: 7px;
+  background: var(--papel);
+  color: var(--texto);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tecla:active {
+  background: var(--destaque-suave);
+}
+
+.tecla-larga {
+  min-width: 58px;
+  font-size: 14px;
+}
+
+/* ---------- janela da dica ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 40;
+}
+
+.modal-caixa {
+  background: var(--papel);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  align-items: stretch;
+}
+
+.recorte-ampliado {
+  align-self: center;
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+}
+
+/* ---------- aviso flutuante ---------- */
+.aviso {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  background: var(--borda-forte);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 50;
+  max-width: 90vw;
+  text-align: center;
+}
+
+@media (min-width: 720px) {
+  .tela {
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .acoes-principais {
+    grid-template-columns: 1fr 1fr;
+  }
+}

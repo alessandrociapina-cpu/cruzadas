@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Diagnóstico do detector</title>
+<body style="margin: 0; background: #111">
+  <canvas id="out"></canvas>
+  <script type="module">
+    import { loadBitmap, toCanvas, detectFromCanvas, normalizeGrid } from '/js/imaging.js';
+    import { LETTER, BLOCK, CLUE } from '/js/detector.js';
+
+    const CORES = {
+      [LETTER]: null,
+      [BLOCK]: 'rgba(220,40,40,.45)',
+      [CLUE]: 'rgba(40,120,240,.35)',
+    };
+
+    // devolve os perfis de tinta e as linhas escolhidas, para inspecionar
+    // numericamente onde a detecção está errando
+    window.dumpProfiles = async (url, quarters, options = {}) => {
+      const D = await import('/js/detector.js');
+      const { canvasToGray } = await import('/js/imaging.js');
+      const bitmap = await loadBitmap(url);
+      const src = toCanvas(bitmap, quarters);
+      const { gray, width, height } = canvasToGray(src);
+      const work = D.downscale(gray, width, height, options.maxDim ?? 900);
+      let bin = D.adaptiveBinarize(work.gray, work.width, work.height, options);
+      const angle = D.estimateRotation(bin, work.width, work.height);
+      let g = work;
+      if (Math.abs(angle) > 0.0025) {
+        g = D.rotateGray(work.gray, work.width, work.height, angle);
+        bin = D.adaptiveBinarize(g.gray, g.width, g.height, options);
+      }
+      const bounds = D.findGridBounds(bin, g.width, g.height);
+      const out = { bounds, angle, size: [g.width, g.height] };
+      for (const axis of ['v', 'h']) {
+        const raw = D.inkProfile(bin, g.width, g.height, bounds, axis);
+        const th = D.topHat(raw, Math.max(7, Math.round(raw.length / 90) | 1));
+        const per = D.dominantPeriod(th, options);
+        out[axis] = {
+          period: per?.period,
+          lines: D.linePositions(th, per.period, { offset: axis === 'v' ? bounds.x0 : bounds.y0 }),
+          profile: Array.from(th, (v) => +v.toFixed(3)),
+        };
+      }
+      return out;
+    };
+
+    window.runDetection = async (url, quarters, options) => {
+      const t0 = performance.now();
+      const bitmap = await loadBitmap(url);
+      const source = toCanvas(bitmap, quarters);
+      const det = detectFromCanvas(source, options);
+      const ms = Math.round(performance.now() - t0);
+
+      // desenha o diagnóstico sobre a imagem endireitada
+      const out = document.getElementById('out');
+      out.width = det.canvas.width;
+      out.height = det.canvas.height;
+      const ctx = out.getContext('2d');
+      ctx.drawImage(det.canvas, 0, 0);
+      const k = det.toCanvasScale;
+      ctx.lineWidth = Math.max(1, out.width / 600);
+      ctx.strokeStyle = 'rgba(0,200,120,.9)';
+      for (const x of det.xs) {
+        ctx.beginPath();
+        ctx.moveTo(x * k, det.ys[0] * k);
+        ctx.lineTo(x * k, det.ys[det.ys.length - 1] * k);
+        ctx.stroke();
+      }
+      for (const y of det.ys) {
+        ctx.beginPath();
+        ctx.moveTo(det.xs[0] * k, y * k);
+        ctx.lineTo(det.xs[det.xs.length - 1] * k, y * k);
+        ctx.stroke();
+      }
+      for (let r = 0; r < det.rows; r++) {
+        for (let c = 0; c < det.cols; c++) {
+          const cor = CORES[det.types[r * det.cols + c]];
+          if (!cor) continue;
+          ctx.fillStyle = cor;
+          ctx.fillRect(
+            det.xs[c] * k,
+            det.ys[r] * k,
+            (det.xs[c + 1] - det.xs[c]) * k,
+            (det.ys[r + 1] - det.ys[r]) * k
+          );
+        }
+      }
+
+      const norm = normalizeGrid(det, 110);
+      const pattern = [];
+      for (let r = 0; r < det.rows; r++) {
+        let s = '';
+        for (let c = 0; c < det.cols; c++) s += '.#?'[det.types[r * det.cols + c]];
+        pattern.push(s);
+      }
+      return {
+        png: out.toDataURL('image/jpeg', 0.7),
+        normalizada: norm.toDataURL('image/jpeg', 0.7),
+        linhas: det.rows,
+        colunas: det.cols,
+        tipo: det.kind,
+        anguloGraus: +((det.angle * 180) / Math.PI).toFixed(2),
+        avisos: det.warnings,
+        ms,
+        pattern,
+      };
+    };
+  </script>
+</body>

@@ -1,0 +1,5 @@
+node_modules
+capturas/
+diagnostico.png
+*.log
+.DS_Store

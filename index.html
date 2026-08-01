@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cruzadas</title>
+    <meta
+      name="description"
+      content="Fotografe uma palavra cruzada do jornal e preencha na tela."
+    />
+    <meta name="theme-color" content="#1f6feb" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icone.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icons/icone-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Cruzadas" />
+    <link rel="stylesheet" href="css/estilo.css" />
+  </head>
+  <body>
+    <header class="barra">
+      <button class="botao-icone" id="voltar" hidden aria-label="Voltar">←</button>
+      <h1 id="titulo-tela">Cruzadas</h1>
+      <div class="barra-acoes" id="acoes-barra"></div>
+    </header>
+
+    <main id="conteudo">
+      <!-- ============ Biblioteca ============ -->
+      <section class="tela" id="tela-biblioteca">
+        <div class="acoes-principais">
+          <label class="botao botao-primario">
+            <input type="file" id="entrada-camera" accept="image/*" capture="environment" hidden />
+            📷 Fotografar cruzada
+          </label>
+          <label class="botao">
+            <input type="file" id="entrada-arquivo" accept="image/*" hidden />
+            🖼️ Escolher imagem
+          </label>
+        </div>
+
+        <h2 class="secao">Minhas cruzadas</h2>
+        <ul class="lista" id="lista-puzzles"></ul>
+        <p class="vazio" id="biblioteca-vazia">
+          Nenhuma cruzada ainda. Fotografe a cruzada do jornal para começar.
+        </p>
+
+        <details class="avancado">
+          <summary>Backup</summary>
+          <div class="linha-botoes">
+            <button class="botao" id="exportar">Exportar tudo</button>
+            <label class="botao">
+              <input type="file" id="importar" accept="application/json" hidden />
+              Importar backup
+            </label>
+          </div>
+          <p class="dica-texto">
+            O backup salva as grades, as imagens e o que você já preencheu num arquivo só.
+          </p>
+        </details>
+      </section>
+
+      <!-- ============ Importação ============ -->
+      <section class="tela" id="tela-importar" hidden>
+        <div class="previa">
+          <canvas id="previa-canvas"></canvas>
+          <div class="carregando" id="carregando" hidden>
+            <span class="giro"></span> Lendo a grade…
+          </div>
+        </div>
+
+        <p class="erro" id="erro-deteccao" hidden></p>
+
+        <div class="painel">
+          <div class="campo">
+            <label for="titulo-puzzle">Nome</label>
+            <input type="text" id="titulo-puzzle" placeholder="Cruzada de hoje" />
+          </div>
+
+          <div class="campo-duplo">
+            <div class="campo">
+              <label for="giro">Girar foto</label>
+              <select id="giro">
+                <option value="0">Sem girar</option>
+                <option value="1">90° ↻</option>
+                <option value="2">180°</option>
+                <option value="3">90° ↺</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="sensibilidade">Casas escuras</label>
+              <input type="range" id="sensibilidade" min="-60" max="60" step="5" value="0" />
+            </div>
+          </div>
+
+          <div class="campo-duplo">
+            <div class="campo">
+              <label for="forcar-linhas">Linhas</label>
+              <input type="number" id="forcar-linhas" min="2" max="60" placeholder="auto" />
+            </div>
+            <div class="campo">
+              <label for="forcar-colunas">Colunas</label>
+              <input type="number" id="forcar-colunas" min="2" max="60" placeholder="auto" />
+            </div>
+          </div>
+
+          <p class="dica-texto" id="resumo-deteccao"></p>
+
+          <div class="linha-botoes">
+            <button class="botao" id="reler">Ler de novo</button>
+            <button class="botao botao-primario" id="confirmar-grade">Continuar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Ajuste da grade ============ -->
+      <section class="tela" id="tela-ajustar" hidden>
+        <p class="dica-texto">
+          Toque nas casas que ficaram erradas. Arraste para corrigir várias de uma vez.
+        </p>
+        <div class="seletor-pincel" id="seletor-pincel">
+          <button class="pincel" data-tipo="0">Casa vazia</button>
+          <button class="pincel" data-tipo="2">Casa de dica</button>
+          <button class="pincel" data-tipo="1">Casa preta</button>
+        </div>
+        <div class="area-grade" id="area-ajuste"></div>
+        <div class="linha-botoes">
+          <button class="botao" id="cancelar-ajuste">Cancelar</button>
+          <button class="botao botao-primario" id="salvar-ajuste">Salvar e jogar</button>
+        </div>
+      </section>
+
+      <!-- ============ Jogo ============ -->
+      <section class="tela tela-jogo" id="tela-jogar" hidden>
+        <div class="area-grade" id="area-jogo"></div>
+        <div class="rodape-jogo">
+          <div class="dica-atual" id="dica-atual">
+            <span class="dica-rotulo" id="dica-rotulo"></span>
+            <span class="dica-texto-atual" id="dica-texto"></span>
+          </div>
+          <div class="teclado" id="teclado"></div>
+        </div>
+      </section>
+    </main>
+
+    <div class="aviso" id="aviso" hidden></div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
