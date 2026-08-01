@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Cruzadas">
+  <rect width="512" height="512" rx="96" fill="#1f6feb" />
+  <g transform="translate(76 76)">
+    <rect width="360" height="360" rx="16" fill="#ffffff" />
+    <g fill="#2a2f3a">
+      <rect x="0" y="0" width="360" height="4" />
+      <rect x="0" y="89" width="360" height="4" />
+      <rect x="0" y="178" width="360" height="4" />
+      <rect x="0" y="267" width="360" height="4" />
+      <rect x="0" y="356" width="360" height="4" />
+      <rect x="0" y="0" width="4" height="360" />
+      <rect x="89" y="0" width="4" height="360" />
+      <rect x="178" y="0" width="4" height="360" />
+      <rect x="267" y="0" width="4" height="360" />
+      <rect x="356" y="0" width="4" height="360" />
+    </g>
+    <rect x="4" y="4" width="85" height="85" fill="#2a2f3a" />
+    <rect x="182" y="93" width="85" height="85" fill="#2a2f3a" />
+    <rect x="271" y="271" width="85" height="85" fill="#2a2f3a" />
+    <g fill="#1f6feb" font-family="system-ui, sans-serif" font-size="64" font-weight="700" text-anchor="middle">
+      <text x="135" y="68">C</text>
+      <text x="313" y="157">R</text>
+      <text x="46" y="335">Z</text>
+    </g>
+  </g>
+</svg>
